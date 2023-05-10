@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="m-5">
+            <h2 class="text-center">Inscrivez-vous</h2>
+
+            
+            
+            <form method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% for message in errors.values %}
+                <h3 style="color: red;">{{ message }}</h3>
+                {% endfor %}
+                <div class="row">
+                    <div class="col text-center">
+                        {% bootstrap_button "Retour accueil" href="../" button_class="btn-primary m-3 col-2" %}
+                        {% bootstrap_button "S'inscrire" button_type="submit" button_class="btn-primary m-3 col-2" %}
+                    </div>
+                </div>
+
+            </form>
+            
+        </div>
+    </div>
+
+{% endblock content %}

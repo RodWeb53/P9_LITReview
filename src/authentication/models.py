@@ -20,6 +20,7 @@ class MyUserManager(BaseUserManager):
         user.save()
         return user
 
+
 class CustomeUser(AbstractBaseUser):
     username = models.CharField(
         unique=True,
