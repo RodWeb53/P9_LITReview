@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from . import forms
 from django.contrib.auth.forms import UserCreationForm
 from authentication.models import CustomeUser
+from authentication.forms import CustomerSignupForm
 
 def login_page(request):
     form = forms.LoginForm()
@@ -21,18 +22,10 @@ def login_page(request):
                 message = 'Identifiants invalides.'
     return render(request, 'authentication/login.html', context={'form': form, 'message': message})
 
-
 def logout_user(request):
     
     logout(request)
     return redirect('login')
-
-
-class CustomerSignupForm(UserCreationForm):
-    class Meta:
-        model = CustomeUser
-        fields = UserCreationForm.Meta.fields
-
 
 def signup(request):
     context = {}
