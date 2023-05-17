@@ -28,6 +28,12 @@ class CustomeUser(AbstractBaseUser):
         blank=False,
         verbose_name="Nom d'utilisateur"
     )
+    follows = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        verbose_name='suivi',
+        blank=True,
+    )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)

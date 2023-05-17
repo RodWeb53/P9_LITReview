@@ -1,8 +1,8 @@
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import render, redirect
 from . import forms
-from django.contrib.auth.forms import UserCreationForm
-from authentication.models import CustomeUser
+# from django.contrib.auth.forms import UserCreationForm
+# from authentication.models import CustomeUser
 from authentication.forms import CustomerSignupForm
 
 def login_page(request):

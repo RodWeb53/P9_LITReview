@@ -14,7 +14,7 @@
                         {% csrf_token %}
                         {% bootstrap_form form %}
                         {% for message in errors.values %}
-                        <h3 style="color: red;">{{ message }}</h3>
+                        <h5 style="color: red;">{{ message }}</h5>
                         {% endfor %}
                         <div class="row">
                             <div class="col text-center">
