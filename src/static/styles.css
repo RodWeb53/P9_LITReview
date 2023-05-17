@@ -1,0 +1,16 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+nav {
+    background-color: #b1d9f6;
+}
+
+body {
+    padding-top: 5%;
+    background: linear-gradient(0deg, #5d6a70 0%, #bed9f4 100%);
+}
+
+.main {
+    min-height: 100vh;
+}

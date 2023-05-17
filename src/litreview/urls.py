@@ -32,7 +32,8 @@ urlpatterns = [
     path('logout/', authentication.views.logout_user, name='logout'),
     path('home/', ticket.views.home, name='home'),
     path('signup/', authentication.views.signup, name='signup'),
-    path('ticket/add/', ticket.views.create_ticket, name='create-ticket')
+    path('ticket/add/', ticket.views.create_ticket, name='create-ticket'),
+    path('review/add/', ticket.views.create_review, name="create-review"),
 ]
 if settings.DEBUG:
     urlpatterns += static(
