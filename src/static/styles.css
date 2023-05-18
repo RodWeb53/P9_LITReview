@@ -14,3 +14,11 @@ body {
 .main {
     min-height: 100vh;
 }
+.rank {
+    font-size: 2.3vh;
+}
+
+.comment {
+    background-color: rgb(240, 244, 248);
+    border-radius: 5px;
+}

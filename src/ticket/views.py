@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from itertools import chain
 from ticket.forms import TicketForm, ReviewForm
-from .models import Ticket
+from .models import Ticket, Review
 
 @login_required
 def home(request):
@@ -47,3 +48,19 @@ def create_review(request):
     }
     return render(request, "ticket/create-review.html", context=context)
 
+@login_required
+def posts(request):
+    tickets = Ticket.objects.filter(user_id=request.user)
+    reviews = Review.objects.filter(user_id=request.user)
+    tickets_and_reviews = sorted(chain(tickets, reviews), key=lambda instance:
+    instance.time_created, reverse=True)
+    print("les donnees cumulées")
+    print(tickets_and_reviews)
+
+    context = {
+        "tickets": tickets,
+        "reviews": reviews,
+        "tickets_and_reviews": tickets_and_reviews,
+    }
+    
+    return render(request, "ticket/posts.html", context=context)
