@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from itertools import chain
 from ticket.forms import TicketForm, ReviewForm
@@ -21,8 +21,21 @@ def create_ticket(request):
     else:
         form = TicketForm()
 
-    context = {"form": form,}
+    context = {"form": form, }
     return render(request, "ticket/create-ticket.html", context=context)
+
+@login_required
+def update_ticket(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    form = TicketForm(instance=ticket )
+    if request.method == 'POST':
+        form = TicketForm(request.POST, request.FILES, instance=ticket)
+        if form.is_valid():
+            form.save()
+            return redirect('posts')
+    context = {"form": form, }
+    return render(request, "ticket/update-ticket.html", context=context)
+
 
 @login_required
 def create_review(request):
@@ -54,8 +67,6 @@ def posts(request):
     reviews = Review.objects.filter(user_id=request.user)
     tickets_and_reviews = sorted(chain(tickets, reviews), key=lambda instance:
     instance.time_created, reverse=True)
-    print("les donnees cumulées")
-    print(tickets_and_reviews)
 
     context = {
         "tickets": tickets,
