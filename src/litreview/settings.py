@@ -132,7 +132,7 @@ AUTH_USER_MODEL = "authentication.CustomeUser"
 
 STATIC_URL = '/static/'
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "ticket/home"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR.joinpath('media/')

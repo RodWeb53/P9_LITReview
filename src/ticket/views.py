@@ -6,36 +6,38 @@ from .models import Ticket, Review
 
 @login_required
 def home(request):
-    return render(request, 'ticket/home.html')
+    tickets = Ticket.objects.all()
+    reviews = Review.objects.all()
+    tickets_and_reviews = sorted(chain(tickets, reviews), key=lambda instance:
+    instance.time_created, reverse=True)
+   
 
-
-@login_required
-def create_ticket(request):
-    if request.method == "POST":
-        form = TicketForm(request.POST, request.FILES)
-        if form.is_valid():
-            ticket = form.save(commit=False)
-            ticket.user = request.user
-            ticket.save()
-            return redirect('home')
-    else:
-        form = TicketForm()
-
-    context = {"form": form, }
-    return render(request, "ticket/create-ticket.html", context=context)
+    return render(request, 'ticket/home.html', locals())
 
 @login_required
-def update_ticket(request, ticket_id):
-    ticket = get_object_or_404(Ticket, id=ticket_id)
-    form = TicketForm(instance=ticket )
+def add_ticket(request, ticket_id=None):
+    form = TicketForm(
+        request.POST if request.method == 'POST' else None,
+        request.FILES if request.method == 'POST' else None,
+        instance=Ticket.objects.get(pk=ticket_id) if ticket_id is not None else None
+    )
+    if request.method == 'POST' and form.is_valid():
+        ticket = form.save(commit=False)
+        ticket.user = request.user
+        ticket.save()
+        return redirect('home')
+    return render(request, "ticket/create_ticket.html", locals())
+
+@login_required
+def delete_ticket(request, ticket_id=None):
     if request.method == 'POST':
-        form = TicketForm(request.POST, request.FILES, instance=ticket)
-        if form.is_valid():
-            form.save()
-            return redirect('posts')
-    context = {"form": form, }
-    return render(request, "ticket/update-ticket.html", context=context)
+        ticket_id = request.POST.get("ticket_id")
+        ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)
+        ticket.delete()
+        return redirect('posts')
+    ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)
 
+    return render(request, "ticket/delete_ticket.html", locals())
 
 @login_required
 def create_review(request):
@@ -59,7 +61,53 @@ def create_review(request):
         "ticket_form": ticket_form,
         "review_form": review_form,
     }
-    return render(request, "ticket/create-review.html", context=context)
+    return render(request, "ticket/create_review.html", context=context)
+
+@login_required
+def update_review(request, review_id=None):
+    form = ReviewForm(
+        request.POST if request.method == 'POST' else None,
+        instance=Review.objects.get(pk=review_id) if review_id is not None else None
+    )
+    if request.method == 'POST' and form.is_valid():
+        review = form.save(commit=False)
+        review.user = request.user
+        review.save()
+        return redirect('home')
+    review = get_object_or_404(Review, id=review_id, user=request.user)
+    return render(request, "ticket/update_review.html", locals())
+
+@login_required
+def delete_review(request, review_id=None):
+    if request.method == 'POST':
+        review_id = request.POST.get("review_id")
+        review = get_object_or_404(Review, id=review_id, user=request.user)
+        review.delete()
+        return redirect('posts')
+    review = get_object_or_404(Review, id=review_id, user=request.user)
+
+    return render(request, "ticket/delete_review.html", locals())
+
+@login_required
+def create_review_in_ticket(request, ticket_id=None):
+    form = TicketForm(
+        request.POST if request.method == 'POST' else None,
+        request.FILES if request.method == 'POST' else None,
+        instance=Ticket.objects.get(pk=ticket_id) if ticket_id is not None else None
+    )
+    print("le numero de id est ")
+    print(form.instance.pk)
+    review_form = ReviewForm()
+    if request.method == 'POST':
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.user = request.user
+            review.ticket_id = form.instance.pk
+            review.save()
+            return redirect('home')
+        
+    return render(request, "ticket/create_review_in_ticket.html", locals())
 
 @login_required
 def posts(request):

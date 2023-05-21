@@ -1,13 +1,11 @@
 {% extends 'base.html' %}
+{% load ticket_extras %}
 {% load django_bootstrap5 %}
 
 {% block content %}
-
     <div class="container">
-        <div class="row mt-3">
-            <div class="col-3">
-
-            </div>
+        <div class="row mt-3 mb-3">
+            <div class="col-3"></div>
             <div class="col-3">
                 {% bootstrap_button "Demander une critique" href="../review/add/" button_class="btn-primary mt-3" %}
             </div>
@@ -15,8 +13,126 @@
                 {% bootstrap_button "Créer une critique" href="../ticket/add/" button_class="btn-primary mt-3" %}
             </div>
         </div>
+
+        <div class="row mt-5">
+            <div class="col-xs-12 col-md-2"></div>
+            <div class="col-xs-12 col-md-8">
+                {% for item in tickets_and_reviews %}
+                    {% if item|model_type == 'Ticket' %}
+                        <div class="row border border-3 rounded-3 mb-2">
+                            <div class="col-6">
+                                <p>
+                                    {% get_poster_display item.user %}
+									{% if item.user == user %}
+										avez publié un ticket
+									{% else %}
+										a publié un ticket
+									{% endif %}
+                                </p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <p>{{ item.time_created }}</p>
+                            </div>
+                            <div>
+                                <h4>{{ item.title }}</h4>
+                            </div>
+                            <div class="row mt-3 ">
+                                <div class="col-xs12 col-md-6 text-center">
+                                    {% if item.image %}
+                                        <img class="mb-2" src="{{ item.image.url }}" alt="">
+                                    {% else %}
+                                        <p class="mt-5">Pas d'image pour cete publication</p>
+                                    {% endif %}
+                                </div>
+                                <div class="col-xs-12 col-md-6 mb-2 comment">
+                                    <pre>{{ item.description|default:"Pas de description" }}</pre>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="text-end mr-5 mt-3 mb-3">
+                                    {% if not item.review_set.all %}
+                                        <a class="btn btn-primary" href="{% url 'create_review_in_ticket' item.id %}">Créer une critique</a>
+                                    {% endif %}
+                                    {% if item.user == user %}
+                                        <a class="btn btn-primary" href="{% url 'update_ticket' item.id %}">Modifier</a>  
+                                        <a class="btn btn-danger" href="{% url 'delete_ticket' item.id %}">Supprimer</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% elif item|model_type == 'Review' %}
+                        <div class="row border border-3 rounded-3 mb-2">
+                            <div class="col-6">
+                                <p>
+                                    {% get_poster_display item.user %}
+									{% if item.user == user %}
+										avez publié une critique
+									{% else %}
+										a publié une critique
+									{% endif %}
+                                </p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <p>{{ item.time_created }}</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs12 col-md-6">
+                                    <h4>{{ item.headline }}</h4>
+                                </div>
+                                <div class="col-xs12 col-md-6 rank text-center">
+                                    <p>{{ item|rank }}</p>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="comment ml-3 mr-3 mb-3 p-2">
+                                    <pre>{{ item.body|default:"Pas de commentaire" }}</pre>
+                                </div>
+                            </div>
+
+                            <div class="m-1">
+                                <div class="border border-2 rounded-3 p-1">
+                                    <div class="row">
+                                        
+                                        <div class="col-6">
+                                            <p>Ticket - {% get_poster_display item.ticket.user %}</p>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <p>{{ item.time_created }}</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4>{{ item.ticket.title }}</h4>
+                                    </div>
+                                    <div class="row m-3 ">
+                                        <div class="col-xs12 col-md-6">
+                                            {% if item.ticket.image %}
+                                            <img class="mb-2" src="{{ item.ticket.image.url }}" alt="">
+                                            {% else %}
+                                            <p class="mt-5">Pas d'image pour cete publication</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-xs-12 col-md-6 mb-2 comment">
+                                            <div>
+                                                <pre>{{ item.ticket.description|default:"Pas de description" }}</pre>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="text-end mr-5 mt-3 mb-3">
+                                    <a class="btn btn-primary" href="{% url 'update_review' item.id %}">Modifier</a>  
+                                    <a class="btn btn-danger" href="{% url 'delete_review' item.id %}">Supprimer</a>  
+                                </div>
+                            </div>
+ 
+                                
+                        </div>
+                    {% endif %}
+
+                {% endfor %}
+            </div>
+        </div>
     </div>
-
-
 
 {% endblock content %}

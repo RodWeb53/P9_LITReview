@@ -17,25 +17,21 @@ Including another URLconf
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import path
+from django.urls import path, include
 from django.contrib.auth.views import LoginView
-import authentication.views
-import ticket.views
+from ticket import urls as ticket_urls
+from authentication import urls as authentication_urls
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('', authentication.views.login_page, name='login'),
     path('', LoginView.as_view(
         template_name='authentication/login.html',
         redirect_authenticated_user=True),
          name='login'),
-    path('logout/', authentication.views.logout_user, name='logout'),
-    path('home/', ticket.views.home, name='home'),
-    path('signup/', authentication.views.signup, name='signup'),
-    path('ticket/add/', ticket.views.create_ticket, name='create-ticket'),
-    path('review/add/', ticket.views.create_review, name="create-review"),
-    path("ticket/posts/", ticket.views.posts, name='posts'),
-    path("ticket/update/<int:ticket_id>/", ticket.views.update_ticket, name="update-ticket")
+    path('ticket/', include(ticket_urls)),
+    path('authentication', include(authentication_urls)),
 ]
 if settings.DEBUG:
     urlpatterns += static(

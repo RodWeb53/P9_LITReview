@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load ticket_extras %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-xs-12 col-md-2"></div>
+            <div class="col-xs-12 col-md-8">
+                <div class="row border border-3 rounded-3 mb-2">
+                    <div class="col-6">
+                        <p>Vous avez publié un ticket</p>
+                    </div>
+                    <div class="col-6 text-end">
+                        <p>{{ ticket.time_created }}</p>
+                    </div>
+                    <div>
+                        <h4>{{ ticket.title }}</h4>
+                    </div>
+                    <div class="row mt-3 ">
+                        <div class="col-xs12 col-md-6 text-center">
+                            {% if ticket.image %}
+                            <img class="mb-2" src="{{ ticket.image.url }}" alt="">
+                            {% else %}
+                            <p class="mt-5">Pas d'image pour cete publication</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-xs-12 col-md-6 mb-2 comment">
+                            <pre>{{ ticket.description|default:"Pas de description" }}</pre>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="row border border-3 rounded-3 mb-2">
+                    <div class="text-center">
+                        <form method="post">
+                            <div>
+                                <p class="validate mt-2">Etes-vous sur de vouloir valider la suppression de ce ticket ?</p>
+                            </div>
+                            <div class="mb-2 mt-2">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{ ticket.id }}" name="ticket_id">
+                                {% bootstrap_button "Confirmer" button_type="submit" button_class="btn-danger mt-3 mb-3" %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

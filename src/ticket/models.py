@@ -2,7 +2,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.conf import settings
 from django.db import models
 from PIL import Image
-
+import os
 
 class Ticket(models.Model):
     # Your Ticket model definition goes here
@@ -25,6 +25,11 @@ class Ticket(models.Model):
         # Fonction pour sauvegarder avec le redimensionnement
         super().save(*args, **kwargs)
         self.image_resize()
+    
+    def delete(self, *args, **kwargs):
+        if self.image:
+            os.remove(self.image.path)
+        super().delete(*args, **kwargs)
 
 
 class Review(models.Model):

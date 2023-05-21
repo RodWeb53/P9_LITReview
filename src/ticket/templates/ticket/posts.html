@@ -11,7 +11,14 @@
                     {% if item|model_type == 'Ticket' %}
                         <div class="row border border-3 rounded-3 mb-2">
                             <div class="col-6">
-                                <p>Vous avez publié un ticket</p>
+                                <p>
+                                    {% get_poster_display item.user %}
+                                    {% if item.user == user %}
+                                    avez publié un ticket
+                                    {% else %}
+                                    a publié un ticket
+                                    {% endif %}
+                                </p>
                             </div>
                             <div class="col-6 text-end">
                                 <p>{{ item.time_created }}</p>
@@ -32,16 +39,23 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="text-end">
-                                        <a class="btn btn-primary" href="{% url 'update-ticket' item.id %}">Modifier</a>  
-                                        {% bootstrap_button "Supprimer" button_type="submit" button_class="btn-danger m-3" %}
+                                <div class="text-end mr-5 mt-3 mb-3">
+                                        <a class="btn btn-primary" href="{% url 'update_ticket' item.id %}">Modifier</a>  
+                                        <a class="btn btn-danger" href="{% url 'delete_ticket' item.id %}">Supprimer</a>  
                                 </div>
                             </div>
                         </div>
                     {% elif item|model_type == 'Review' %}
                         <div class="row border border-3 rounded-3 mb-2">
                             <div class="col-6">
-                                <p>Vous avez publié une critique</p>
+                                <p>
+                                    {% get_poster_display item.user %}
+                                    {% if item.user == user %}
+                                    avez publié une critique
+                                    {% else %}
+                                    a publié une critique
+                                    {% endif %}
+                                </p>
                             </div>
                             <div class="col-6 text-end">
                                 <p>{{ item.time_created }}</p>
@@ -65,11 +79,14 @@
                                     <div class="row">
                                         
                                         <div class="col-6">
-                                            {% if item.ticket.user == item.user %}
-                                            <p>Ticket - Vous</p>
-                                            {% else %}
-                                            <p>Ticket publié par {{ item.ticket.user }}</p>
-                                            {% endif %}
+                                            <p>
+                                                Ticket - 
+                                                {% if item.user == user %}
+                                                {% get_poster_display item.user %}
+                                                {% else %}
+                                                {% get_poster_display item.user %}
+                                                {% endif %}
+                                            </p>
                                         </div>
                                         <div class="col-6 text-end">
                                             <p>{{ item.time_created }}</p>
@@ -95,9 +112,9 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="text-end">
-                                    {% bootstrap_button "Modifier" button_type="submit" button_class="btn-primary m-3" %}
-                                    {% bootstrap_button "Supprimer" button_type="submit" button_class="btn-danger m-3" %}
+                                <div class="text-end mr-5 mt-3 mb-3">
+                                    <a class="btn btn-primary" href="{% url 'update_review' item.id %}">Modifier</a>  
+                                    <a class="btn btn-danger" href="{% url 'delete_review' item.id %}">Supprimer</a>  
                                 </div>
                             </div>
  
