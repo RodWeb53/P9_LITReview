@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row text-center mt-5 border border-3 rounded-3">
+            <div>
+                <h2>Désabonnement</h2>
+            </div>
+            <div class="col-xs-12 col-md-2"></div>
+            <div class="col-xs-12 col-md-7">
+                <p>Vous êtes sur de vouloir vous désabonner de l'utilisateur: {{ user.followed_user }}</p>
+            </div>
+            
+            <div class="row">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ user.id }}" name="user_id">
+                    {% bootstrap_button "Confirmation de la suppression" button_type="submit" button_class="btn-primary mt-3 mb-3" %}
+                </form>
+            </div>
+        </div>
+
+
+{% endblock %}

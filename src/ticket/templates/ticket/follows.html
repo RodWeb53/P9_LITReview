@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row text-center mt-5 border border-3 rounded-3">
+            <div>
+                <h2>Suivre d'autres utilisateurs</h2>
+            </div>
+            <div class="col-xs-12 col-md-2"></div>
+            <div class="col-xs-12 col-md-7">
+                <form method="post">
+                    <div class="row align-items-center">
+                        <div class="col-10">
+                            <div class="row m-3  p-3 follow">
+                                {% csrf_token %}
+                                {% for field in form %}
+                                {{ field }}
+                                {% endfor %}
+                            </div>
+                            <p class="text-danger">{{ error_message }}</p>
+                        </div>
+                        <div class="col-2">
+                            {% bootstrap_button "Envoyer" button_type="submit" button_class="btn-primary mt-3 mb-3" %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row mt-5 border border-3 rounded-3">
+            <div class="text-center">
+                <h2>Abonnements</h2>
+            </div>
+            <div class="row mb-3">
+                    {% for item in users_following %}
+                    <div class="col-1"></div>
+                    <div class="col-8 border border-1 rounded-3 p-2">
+                        {{ item.followed_user}}
+                    </div>
+                    <div class="col-2 text-center">
+                        <a class="btn btn-primary" href="{% url 'unfollow' item.id %}">Désabonner</a>
+                    </div>
+                    {% endfor %}
+            </div>
+        </div>
+
+        <div class="row mt-5 border border-3 rounded-3">
+            <div class="text-center">
+                <h2>Abonnés</h2>
+            </div>
+            <div class="row mb-3">
+                    {% for item in users_by_follow %}
+                    <div class="col-2"></div>
+                    <div class="col-8 border border-1 rounded-3 p-2">
+                        {{ item.followed_user}}
+                    </div>
+                    {% endfor %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

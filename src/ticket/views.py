@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from itertools import chain
-from ticket.forms import TicketForm, ReviewForm
-from .models import Ticket, Review
+from ticket.forms import TicketForm, ReviewForm, FollowUserForm
+from .models import Ticket, Review, UserFollows
 
 @login_required
 def home(request):
@@ -95,8 +97,6 @@ def create_review_in_ticket(request, ticket_id=None):
         request.FILES if request.method == 'POST' else None,
         instance=Ticket.objects.get(pk=ticket_id) if ticket_id is not None else None
     )
-    print("le numero de id est ")
-    print(form.instance.pk)
     review_form = ReviewForm()
     if request.method == 'POST':
         review_form = ReviewForm(request.POST)
@@ -123,3 +123,42 @@ def posts(request):
     }
     
     return render(request, "ticket/posts.html", context=context)
+
+
+@login_required
+def followers(request):
+    users_following = UserFollows.objects.filter(user_id=request.user)
+    users_by_follow = UserFollows.objects.filter(followed_user=request.user)
+    
+    error_message =""
+    
+    if request.method == 'POST':
+        form =FollowUserForm(request.POST)
+        
+        try:
+            if form.is_valid():
+                user = form.save(commit=False)
+                user.user = request.user
+                user.save()
+                return redirect('followers')
+        except ObjectDoesNotExist:
+            error_message = "L'utilsateur n'est pas connu"
+        except IntegrityError:
+            error_message = "Cet utilsateur fait déja parti de vos abonnés"
+    else:
+        form = FollowUserForm(request.POST)
+    
+    return render(request, "ticket/follows.html", locals())
+
+
+@login_required
+def unfollow(request, user_id=None):
+    if request.method == "POST":
+        user_id = request.POST.get("user_id")
+        user = get_object_or_404(UserFollows, id=user_id, user=request.user)
+        user.delete()
+        return redirect("followers")
+    user = get_object_or_404(UserFollows, id=user_id, user=request.user)
+    
+    return render(request, "ticket/unfollow.html", locals())
+
