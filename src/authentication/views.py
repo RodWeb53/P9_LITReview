@@ -5,6 +5,7 @@ from . import forms
 # from authentication.models import CustomeUser
 from authentication.forms import CustomerSignupForm
 
+
 def login_page(request):
     form = forms.LoginForm()
     message = ''
@@ -20,16 +21,17 @@ def login_page(request):
                 return redirect('home')
             else:
                 message = 'Identifiants invalides.'
-    return render(request, 'authentication/login.html', context={'form': form, 'message': message})
+    return render(request, 'authentication/login.html', locals())
+
 
 def logout_user(request):
-    
+
     logout(request)
     return redirect('login')
 
+
 def signup(request):
     context = {}
-    
     if request.method == 'POST':
         form = CustomerSignupForm(request.POST)
         if form.is_valid():

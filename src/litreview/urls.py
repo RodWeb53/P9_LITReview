@@ -23,7 +23,6 @@ from ticket import urls as ticket_urls
 from authentication import urls as authentication_urls
 
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', LoginView.as_view(

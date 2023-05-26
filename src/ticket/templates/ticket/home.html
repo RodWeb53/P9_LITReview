@@ -120,13 +120,13 @@
                                 </div>
                             </div>
                             <div class="row">
+                                {% if item.user == user %}
                                 <div class="text-end mr-5 mt-3 mb-3">
                                     <a class="btn btn-primary" href="{% url 'update_review' item.id %}">Modifier</a>  
                                     <a class="btn btn-danger" href="{% url 'delete_review' item.id %}">Supprimer</a>  
                                 </div>
-                            </div>
- 
-                                
+                                {% endif %}
+                            </div>     
                         </div>
                     {% endif %}
 

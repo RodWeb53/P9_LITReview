@@ -2,26 +2,40 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
+from django.db.models import Q
 from itertools import chain
 from ticket.forms import TicketForm, ReviewForm, FollowUserForm
 from .models import Ticket, Review, UserFollows
 
+
 @login_required
 def home(request):
-    tickets = Ticket.objects.all()
-    reviews = Review.objects.all()
-    tickets_and_reviews = sorted(chain(tickets, reviews), key=lambda instance:
-    instance.time_created, reverse=True)
-   
+    basic_user = UserFollows.objects.filter(user__exact=request.user)
+    user_follow = basic_user.values("followed_user_id")
+
+    tickets = Ticket.objects.filter(
+        Q(user__in=user_follow) |
+        Q(user__exact=request.user)
+    )
+    reviews = Review.objects.filter(
+        Q(user__in=user_follow) |
+        Q(user__exact=request.user)
+    )
+    tickets_and_reviews = sorted(
+        chain(tickets, reviews),
+        key=lambda instance:
+        instance.time_created, reverse=True)
 
     return render(request, 'ticket/home.html', locals())
+
 
 @login_required
 def add_ticket(request, ticket_id=None):
     form = TicketForm(
         request.POST if request.method == 'POST' else None,
         request.FILES if request.method == 'POST' else None,
-        instance=Ticket.objects.get(pk=ticket_id) if ticket_id is not None else None
+        instance=Ticket.objects.get(
+            pk=ticket_id) if ticket_id is not None else None
     )
     if request.method == 'POST' and form.is_valid():
         ticket = form.save(commit=False)
@@ -29,6 +43,7 @@ def add_ticket(request, ticket_id=None):
         ticket.save()
         return redirect('home')
     return render(request, "ticket/create_ticket.html", locals())
+
 
 @login_required
 def delete_ticket(request, ticket_id=None):
@@ -40,6 +55,7 @@ def delete_ticket(request, ticket_id=None):
     ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)
 
     return render(request, "ticket/delete_ticket.html", locals())
+
 
 @login_required
 def create_review(request):
@@ -58,18 +74,20 @@ def create_review(request):
     else:
         ticket_form = TicketForm()
         review_form = ReviewForm()
-    
+
     context = {
         "ticket_form": ticket_form,
         "review_form": review_form,
     }
     return render(request, "ticket/create_review.html", context=context)
 
+
 @login_required
 def update_review(request, review_id=None):
     form = ReviewForm(
         request.POST if request.method == 'POST' else None,
-        instance=Review.objects.get(pk=review_id) if review_id is not None else None
+        instance=Review.objects.get(
+            pk=review_id) if review_id is not None else None
     )
     if request.method == 'POST' and form.is_valid():
         review = form.save(commit=False)
@@ -78,6 +96,7 @@ def update_review(request, review_id=None):
         return redirect('home')
     review = get_object_or_404(Review, id=review_id, user=request.user)
     return render(request, "ticket/update_review.html", locals())
+
 
 @login_required
 def delete_review(request, review_id=None):
@@ -90,12 +109,14 @@ def delete_review(request, review_id=None):
 
     return render(request, "ticket/delete_review.html", locals())
 
+
 @login_required
 def create_review_in_ticket(request, ticket_id=None):
     form = TicketForm(
         request.POST if request.method == 'POST' else None,
         request.FILES if request.method == 'POST' else None,
-        instance=Ticket.objects.get(pk=ticket_id) if ticket_id is not None else None
+        instance=Ticket.objects.get(
+            pk=ticket_id) if ticket_id is not None else None
     )
     review_form = ReviewForm()
     if request.method == 'POST':
@@ -106,22 +127,26 @@ def create_review_in_ticket(request, ticket_id=None):
             review.ticket_id = form.instance.pk
             review.save()
             return redirect('home')
-        
+
     return render(request, "ticket/create_review_in_ticket.html", locals())
+
 
 @login_required
 def posts(request):
     tickets = Ticket.objects.filter(user_id=request.user)
     reviews = Review.objects.filter(user_id=request.user)
-    tickets_and_reviews = sorted(chain(tickets, reviews), key=lambda instance:
-    instance.time_created, reverse=True)
+    tickets_and_reviews = sorted(
+        chain(tickets, reviews),
+        key=lambda instance:
+        instance.time_created, reverse=True
+        )
 
     context = {
         "tickets": tickets,
         "reviews": reviews,
         "tickets_and_reviews": tickets_and_reviews,
     }
-    
+
     return render(request, "ticket/posts.html", context=context)
 
 
@@ -129,12 +154,12 @@ def posts(request):
 def followers(request):
     users_following = UserFollows.objects.filter(user_id=request.user)
     users_by_follow = UserFollows.objects.filter(followed_user=request.user)
-    
-    error_message =""
-    
+
+    error_message = ""
+
     if request.method == 'POST':
-        form =FollowUserForm(request.POST)
-        
+        form = FollowUserForm(request.POST)
+
         try:
             if form.is_valid():
                 user = form.save(commit=False)
@@ -147,7 +172,7 @@ def followers(request):
             error_message = "Cet utilsateur fait déja parti de vos abonnés"
     else:
         form = FollowUserForm(request.POST)
-    
+
     return render(request, "ticket/follows.html", locals())
 
 
@@ -159,6 +184,5 @@ def unfollow(request, user_id=None):
         user.delete()
         return redirect("followers")
     user = get_object_or_404(UserFollows, id=user_id, user=request.user)
-    
-    return render(request, "ticket/unfollow.html", locals())
 
+    return render(request, "ticket/unfollow.html", locals())

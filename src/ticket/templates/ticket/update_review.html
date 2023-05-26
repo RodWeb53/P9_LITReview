@@ -21,11 +21,10 @@
                             <div class="row mb-2">
                                 <div class="col-xs-12 col-md-6 text-center">
                                     {% if form.instance.image %}
-                                    <img src="{{ review.ticket.image.url }}" alt="">
+                                        <img src="{{ review.ticket.image.url }}" alt="">
                                     {% else %}
                                         <p>Pas d'image pour ce ticket</p>
                                     {% endif %}
-                                    
                                 </div>
                                 <div class="col-xs-12 col-md-6">
                                     <pre>{{ review.ticket.description }}</pre>

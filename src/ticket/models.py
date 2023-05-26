@@ -4,28 +4,32 @@ from django.db import models
 from PIL import Image
 import os
 
+
 class Ticket(models.Model):
     # Your Ticket model definition goes here
     title = models.CharField(max_length=128, verbose_name="Titre")
     description = models.TextField(max_length=2048, blank=True)
-    user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+        )
     image = models.ImageField(null=True, blank=True)
     time_created = models.DateTimeField(auto_now_add=True)
-    
+
     IMAGE_MAX_SIZE = (300, 300)
-    
+
     def image_resize(self):
         # Fonction pour le redimensionnement de l'image
         if self.image:
             with Image.open(self.image) as image:
                 image.thumbnail(self.IMAGE_MAX_SIZE)
                 image.save(self.image.path)
-    
+
     def save(self, *args, **kwargs):
         # Fonction pour sauvegarder avec le redimensionnement
         super().save(*args, **kwargs)
         self.image_resize()
-    
+
     def delete(self, *args, **kwargs):
         if self.image:
             os.remove(self.image.path)
@@ -48,8 +52,15 @@ class Review(models.Model):
         default=Rating.ZERO,
         verbose_name="Note"
         )
-    headline = models.CharField(max_length=128, verbose_name="Titre de la critique")
-    body = models.TextField(max_length=8192, blank=True, verbose_name="Commentaire")
+    headline = models.CharField(
+        verbose_name="Titre de la critique",
+        max_length=128
+        )
+    body = models.TextField(
+        verbose_name="Commentaire",
+        max_length=8192,
+        blank=True
+        )
     user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     time_created = models.DateTimeField(auto_now_add=True)
@@ -66,7 +77,10 @@ class UserFollows(models.Model):
         to=settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="followed_by")
-    
+
+    def __str__(self):
+        return self.user.username
+
     class Meta:
         # ensures we don't get multiple UserFollows instances
         # for unique user-user_followed pairs
