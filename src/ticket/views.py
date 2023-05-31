@@ -51,7 +51,7 @@ def delete_ticket(request, ticket_id=None):
         ticket_id = request.POST.get("ticket_id")
         ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)
         ticket.delete()
-        return redirect('posts')
+        return redirect('home')
     ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)
 
     return render(request, "ticket/delete_ticket.html", locals())
@@ -75,11 +75,7 @@ def create_review(request):
         ticket_form = TicketForm()
         review_form = ReviewForm()
 
-    context = {
-        "ticket_form": ticket_form,
-        "review_form": review_form,
-    }
-    return render(request, "ticket/create_review.html", context=context)
+    return render(request, "ticket/create_review.html", locals())
 
 
 @login_required
@@ -104,7 +100,7 @@ def delete_review(request, review_id=None):
         review_id = request.POST.get("review_id")
         review = get_object_or_404(Review, id=review_id, user=request.user)
         review.delete()
-        return redirect('posts')
+        return redirect('home')
     review = get_object_or_404(Review, id=review_id, user=request.user)
 
     return render(request, "ticket/delete_review.html", locals())
@@ -141,13 +137,7 @@ def posts(request):
         instance.time_created, reverse=True
         )
 
-    context = {
-        "tickets": tickets,
-        "reviews": reviews,
-        "tickets_and_reviews": tickets_and_reviews,
-    }
-
-    return render(request, "ticket/posts.html", context=context)
+    return render(request, "ticket/posts.html", locals())
 
 
 @login_required

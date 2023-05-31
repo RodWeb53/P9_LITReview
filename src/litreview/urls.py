@@ -30,7 +30,7 @@ urlpatterns = [
         redirect_authenticated_user=True),
          name='login'),
     path('ticket/', include(ticket_urls)),
-    path('authentication', include(authentication_urls)),
+    path('authentication/', include(authentication_urls)),
 ]
 if settings.DEBUG:
     urlpatterns += static(

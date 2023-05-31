@@ -1,6 +1,7 @@
 # Développez une application Web en utilisant Django
 
-Création d'un applicatif web pour la création d'article et de commentaire associé à cet article
+Création d'un applicatif web pour la création d'articles et de commentaires associés à cet article
+
 L'interface est écrite en Python avec le framwork Django
 
 
@@ -68,3 +69,17 @@ Dans votre navigateur tapez l'adresse suivante :
     | Utilisateur7  |   LITREview2023   |
     |_______________|___________________|
 
+## Mot de passe
+
+LITREview2023
+
+## Générer un rapport avec flake8-html
+
+Le rapport flake8 créer un rapport montrant que le code ne contient pas d'érreur de peluchage
+
+    Le rapport sera créer à l'aide du fichier setup.cfg
+    le fichier de configuration permet de ne pas prendre en analyse l'environnement virtuel
+    Limite la longueur des lignes à 119
+    Et paramètre le répertoire de sortie
+
+    Taper la commande "flake8" a la racine du projet

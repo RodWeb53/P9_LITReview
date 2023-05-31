@@ -5,7 +5,11 @@
 
     <div class="container">
         <div class="row text-center mt-5">
-            <h2>Création d'un ticket</h2>
+            {% if form.instance.id %}
+                <h2>Modification d'un ticket</h2>
+            {% else %}
+                <h2>Création d'un ticket</h2>
+            {% endif %}
         </div>
         {% include 'ticket/partials/create-update-ticket.html' %}
     </div>
